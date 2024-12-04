@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: student-profile
+  name: student-profile-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: student-profile
+  template:
+    metadata:
+      labels:
+        app: student-profile
+    spec:
+      containers:
+      - name: my-student-profile
+        image: 211223789150.dkr.ecr.us-east-1.amazonaws.com/coachak/my-docker-repo
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+          name: http
+          protocol: TCP
+# service type loadbalancer       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: student-profile
+    k8s-app: student-profile
+  name: student-service
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8081
+  type: LoadBalancer
+  selector:
+    app: student-profile
